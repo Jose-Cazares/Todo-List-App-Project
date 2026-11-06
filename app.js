@@ -2,11 +2,11 @@ const addTodoBtn = document.getElementById("addTodoBtn");
 let todoText; // This should be populated when de user click on Add button.
 const inputTag = document.getElementById("todoInput");
 const todoListUl = document.getElementById("todoList");
-const remaining = document.getElementById("remaining-count")
+const remaining = document.getElementById("remaining-count");
+const clearBtn = document.getElementById("clearCompletedBtn")
 
 let todos = [];
 let todosString = localStorage.getItem("todos");
-
 
 // If we have todos in the localStorage, we will read it. 
 if (todosString) {
@@ -24,13 +24,14 @@ const populateTodos = () => {
     }
     todoListUl.innerHTML = string
 
+
     // Handle the delete buttons
     const deleteBtns = document.querySelectorAll(".delete-btn");
 
     deleteBtns.forEach(btn => {
         btn.addEventListener("click", (e) => {
             const confirmation = confirm("Do you want to delete this todo?");
-            if (confirmation){
+            if (confirmation) {
                 todos = todos.filter((todo) => {
                     return (todo.id) !== (e.target.parentNode.id)
                 })
@@ -56,7 +57,7 @@ const populateTodos = () => {
                         return todo
                     }
                 });
-                remaining.innerHTML = todos.filter((todo) =>{
+                remaining.innerHTML = todos.filter((todo) => {
                     return todo.isCompleted !== true;
                 }).length;
                 localStorage.setItem("todos", JSON.stringify(todos));
@@ -70,18 +71,29 @@ const populateTodos = () => {
                         return todo
                     }
                 });
-                remaining.innerHTML = todos.filter((todo) =>{
+                remaining.innerHTML = todos.filter((todo) => {
                     return todo.isCompleted !== true;
                 }).length;
                 localStorage.setItem("todos", JSON.stringify(todos));
             }
         });
     });
-    remaining.innerHTML = todos.filter((todo) =>{
+    remaining.innerHTML = todos.filter((todo) => {
         return todo.isCompleted !== true;
     }).length;
 }
 
+// Handle the clear completed button click
+clearBtn.addEventListener("click", (e) => {
+    const confirmationAll = confirm("Do you want to delete all the completed tasks?");
+    if (confirmationAll) {
+        todos = todos.filter((todo) => {
+            return todo.isCompleted === false
+        })
+        populateTodos();
+        localStorage.setItem("todos", JSON.stringify(todos));
+    }
+});
 
 
 addTodoBtn.addEventListener("click", () => {
