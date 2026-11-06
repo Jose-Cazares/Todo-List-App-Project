@@ -2,8 +2,11 @@ const addTodoBtn = document.getElementById("addTodoBtn");
 let todoText; // This should be populated when de user click on Add button.
 const inputTag = document.getElementById("todoInput");
 const todoListUl = document.getElementById("todoList");
+const remaining = document.getElementById("remaining-count")
+
 let todos = [];
 let todosString = localStorage.getItem("todos");
+
 
 // If we have todos in the localStorage, we will read it. 
 if (todosString) {
@@ -13,7 +16,7 @@ if (todosString) {
 const populateTodos = () => {
     let string = "";
     for (const todo of todos) {
-        string += `<li  id="todo-${todo.id}" class="todo-item ${todo.isCompleted ? "completed" : ""}" >
+        string += `<li  id="${todo.id}" class="todo-item ${todo.isCompleted ? "completed" : ""}" >
                     <input type="checkbox" class="todo-checkbox" ${todo.isCompleted ? "checked" : ""}>
                     <span class="todo-text">${todo.title}</span>
                     <button class="delete-btn">×</button>
@@ -26,11 +29,14 @@ const populateTodos = () => {
 
     deleteBtns.forEach(btn => {
         btn.addEventListener("click", (e) => {
-            todos = todos.filter((todo) => {
-                return ("todo-" + todo.id) !== (e.target.parentNode.id)
-            })
-            localStorage.setItem("todos", JSON.stringify(todos));
-            populateTodos();
+            const confirmation = confirm("Do you want to delete this todo?");
+            if (confirmation){
+                todos = todos.filter((todo) => {
+                    return (todo.id) !== (e.target.parentNode.id)
+                })
+                localStorage.setItem("todos", JSON.stringify(todos));
+                populateTodos();
+            }
         });
     });
 
@@ -44,30 +50,39 @@ const populateTodos = () => {
 
 
                 todos = todos.map(todo => {
-                    console.log(todo.id);
-                    console.log(element.parentNode.id)
-                    if ("todo-" + todo.id == element.parentNode.id) {
+                    if (todo.id == element.parentNode.id) {
                         return { ...todo, isCompleted: true }
                     } else {
                         return todo
                     }
                 });
+                remaining.innerHTML = todos.filter((todo) =>{
+                    return todo.isCompleted !== true;
+                }).length;
                 localStorage.setItem("todos", JSON.stringify(todos));
 
             } else {
                 element.parentNode.classList.remove("completed");
                 todos = todos.map(todo => {
-                    if ("todo-" + todo.id == element.parentNode.id) {
+                    if (todo.id == element.parentNode.id) {
                         return { ...todo, isCompleted: false }
                     } else {
                         return todo
                     }
                 });
+                remaining.innerHTML = todos.filter((todo) =>{
+                    return todo.isCompleted !== true;
+                }).length;
                 localStorage.setItem("todos", JSON.stringify(todos));
             }
         });
     });
+    remaining.innerHTML = todos.filter((todo) =>{
+        return todo.isCompleted !== true;
+    }).length;
 }
+
+
 
 addTodoBtn.addEventListener("click", () => {
     todoText = inputTag.value;
